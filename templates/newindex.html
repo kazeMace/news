@@ -1,0 +1,251 @@
+<!doctype html>
+{% load  staticfiles %}
+<html class="no-js" lang="ch">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <link rel="stylesheet" href="{% static 'css/semantic.css' %}">
+        <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+        <script type="text/javascript" src="{% static 'js/reqwest.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/vue1.js' %}"></script>
+
+
+    </head>
+    <body id="app">
+    <!--菜单-->
+        <div class="ui fixed menu top_menu">
+          <div class="item weather" style="background-color: #272829">
+              <a href="http://www.weather.com.cn/weather/101010100.shtml"><h4 class="ui inverted header">北京 晴 -5°/6°</h4></a>
+          </div>
+          <div class="item title">
+              <h2 class="ui center aligned inverted header">基于web的个性化新闻推荐系统</h2>
+          </div>
+          <div class="right menu">
+
+                {% if request.user.is_authenticated %}
+                    <div class="item">
+                        <h5 class="ui inverted header">
+                            <a class="ui avatar image" href="{% url 'information' request.user.username %}">
+                                {% if login_user.profile.avatar %}
+                                    <img src="/upload/{{ login_user.profile.avatar }}" alt="头像加载失败" />
+                                {% else %}
+                                    <img src="{% static 'img/avatar_1.png' %}" alt="头像加载失败" />
+                                {% endif %}
+                            </a>
+                            {% if login_user.profile.nickname %}
+                                <a style="color: white" href="{% url 'information' request.user.username %}">{{ login_user.profile.nickname }}</a>
+                            {% else %}
+                                <a style="color: white" href="{% url 'information' request.user.username %}">{{ login_user.username }}</a>
+                            {% endif %}
+
+                        </h5>
+                    </div>
+                    <div class="item">
+                        <a href="{% url 'logout' %}" class="ui inverted circular button"><i class="sign out icon"></i>注销</a>
+                    </div>
+
+                {% else %}
+
+                    <div class="item">
+                        <div class="ui buttons">
+                            <a href="{% url 'login' %}" class="ui inverted button"><i class="sign in icon"></i>登录</a>
+                            <div class="or"></div>
+                            <a href="{% url 'register' %}" class="ui inverted button"><i class="write icon"></i>注册</a>
+                        </div>
+                    </div>
+                {% endif %}
+              <div class="item" id="feedback">
+                  <a href="#"><h4 class="ui inverted header feedback">反馈</h4></a>
+              </div>
+              <div class="item" id="more">
+                  <a href=""><h4 class="ui inverted header more">更多</h4></a>
+              </div>
+          </div>
+        </div>
+    <!--内容-->
+        <div class="ui container content_page" style="padding-top: 50px;">
+
+                <div class="ui grid">
+                    <div class="two wide column vertical_menu" style="position: fixed" >
+
+                        <div class="ui vertical fluid tabular menu" style="border: 0;">
+                            {% if 'recommend' in request.path%}
+                                <a  href="{% url 'index'%}recommend" class="active item" style="background-color: lightcoral; border:0;"><h3 class="ui header" style="color: white">推荐</h3> </a>
+                            {% else %}
+                                <a id="recommend" href="{% url 'index'%}recommend" class="item" style="color: #3b3c3c;font-weight: bolder;background-color: white">推荐</a>
+                            {% endif %}
+
+                            {% if 'china' in request.path%}
+                                <a href="{% url 'index'%}china" class="active item" style="background-color: lightcoral;border:0; " > <h3 class="ui header" style="color: white">国内</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}china" class=" red item"style="color:#3b3c3c;font-weight: bolder;background-color: white">国内  </a>
+                            {% endif %}
+
+                            {% if 'world' in request.path%}
+                                <a href="{% url 'index'%}world" class="active yellow item" style="background-color: lightcoral;border:0; "> <h3 class="ui header" style="color: white">国际</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}world" class="item"style="color:#3b3c3c;font-weight: bolder;background-color: white"> 国际 </a>
+                            {% endif %}
+
+                            {% if 'social' in request.path%}
+                                <a href="{% url 'index'%}social" class="active green item" style="background-color: lightcoral;border:0; "> <h3 class="ui header" style="color: white">社会</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}social" class="item"style="color:#3b3c3c;font-weight: bolder;background-color: white"> 社会 </a>
+                            {% endif %}
+
+                            {% if 'sports' in request.path%}
+                                <a href="{% url 'index'%}sports" class="active blue item"style="background-color: lightcoral; border:0;"> <h3 class="ui header" style="color: white">体育</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}sports" class="item"style="color:#3b3c3c;font-weight: bolder;background-color: white"> 体育 </a>
+                            {% endif %}
+
+                            {% if 'economic' in request.path%}
+                                <a href="{% url 'index'%}economic" class="active cyan item" style="background-color: lightcoral;border:0; ">  <h3 class="ui header"style="color: white">财经</h3></a>
+                            {% else %}
+                                <a href="{% url 'index'%}economic" class="item"style="color:#3b3c3c;font-weight: bolder;background-color: white"> 财经 </a>
+                            {% endif %}
+
+
+                            {% if 'mil' in request.path%}
+                                <a href="{% url 'index'%}mil" class="active purple item" style="background-color: lightcoral;border:0; "> <h3 class="ui header" style="color: white">军事</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}mil" class="item"style="color:#3b3c3c;font-weight: bolder;background-color: white"> 军事 </a>
+                            {% endif %}
+
+                            {% if 'tech' in request.path%}
+                                <a href="{% url 'index'%}tech" class="active pink item" style="background-color: lightcoral;border:0; "> <h3 class="ui header" style="color: white">科技</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}tech" class="item"style="color:#3b3c3c;font-weight: bolder;background-color: white"> 科技 </a>
+                            {% endif %}
+
+                            {% if 'funny' in request.path%}
+                                <a href="{% url 'index'%}funny" class="active olive item" style="background-color: lightcoral;border:0; "> <h3 class="ui header" style="color: white">搞笑</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}funny" class="item"style="color:#3b3c3c;font-weight: bolder;background-color: white"> 搞笑 </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    <div class="eleven wide stretched column" style="margin-left: 160px">
+                        <div class="ui raised segment news_page">
+                        {% verbatim %}
+                            <div v-for="article in article_list" class="ui raised segment news">
+                                <a href="{% url 'detail' article.id %}">
+
+                                    <h2 class="ui header">{{ article.headline}}</h2>
+                                </a>
+                                <div style="margin-bottom: 5px;">
+                                    {{ article.content|charfilter }}
+                                    <div>
+                                         <a href="{% url 'detail' article.id %}" style="color: grey;">
+                                             <i class="angle tiny double grey right icon"></i>
+                                                阅读更多
+                                         </a>
+                                    </div>
+                                </div>
+                            <div class="ui form" ></div>
+                                <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}china"> {{ article.tag }}</a>
+                                <span class="" style="color:rgb(226, 226, 226)">|</span>
+                                <span style="color: grey;"> {{ article.source }}</span>
+                                <span class="" style="color:rgb(226, 226, 226)">|</span>
+                                <span style="color: darkgrey">{{ article.date }}</span>
+
+                            </div>
+                        {% endverbatim %}
+                        </div>
+                    </div>
+                    <div class="three wide column">
+                    </div>
+                </div>
+
+        </div>
+    <!--页脚-->
+
+        <div class="ui vertical basic inverted very padded segment">
+            <div class="ui grid">
+
+                <div class="four wide column">
+                    <div class="ui image">
+                        <img src="" alt="">
+                    </div>
+                </div>
+
+                <div class="four wide column">
+                    <div class="ui inverted vertical text menu">
+                        <h3 class="item header" style="color:#ffffff;">信息</h3>
+                        <a class="item" href="#">关于我们</a>
+                        <a class="item" href="#" >联系我们</a>
+                        <a class="item" href="#" >blog</a>
+                    </div>
+                </div>
+
+                <div class="four wide column">
+                    <div class="ui inverted vertical text menu">
+                        <h3 class="item header" style="color:#ffffff;" >社交网络</h3>
+                        <a class="item" href="#" ><i class="weibo icon"></i>新浪微博</a>
+                        <a class="item" href="#" ><i class="mail icon"></i>电子邮件</a>
+                        <a class="item" href="#" ><i class="github icon"></i>github</a>
+                    </div>
+                </div>
+
+                <div class="four wide column">
+                    <div class="ui vertical text menu">
+                        <p>DESIGN BY</p>
+                        <h2 class="ui header"><a href="#" style="color: #e2e2e2 ">zhangbohang</a></h2>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    <script>
+        Vue.filter('charfilter',function(value){
+            return value[1:150];
+        });
+        var vm = new Vue({
+            el:'#app',
+
+            data:{
+
+                article_list:[],
+            },
+            methods:{
+                getData:function () {
+                    var self = this;
+                    reqwest({
+                        url:'/api/article/',
+                        type:'json',
+                        method:'get',
+{#                        headers:Cookies.get('token')? {'Authorization': 'Token ' + Cookies.get('token')}:{},#}
+                        success:function (resp) {
+                            console.log(resp);
+                            self.article_list = resp
+
+                        },
+
+                    })
+                }
+            },
+            computed:{
+
+            },
+            ready:function () {
+                    this.getData()
+            }
+
+
+        })
+
+
+    </script>
+
+
+    </body>
+</html>

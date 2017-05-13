@@ -1,0 +1,856 @@
+<!doctype html>
+{% load  staticfiles %}
+<html class="no-js" lang="ch">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <link rel="stylesheet" href="{% static 'css/mplayer.css' %}">
+        <link rel="stylesheet" href="{% static 'css/semantic.css' %}">
+        <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+{#        <link href="{% static 'css/preview.css' %}" type="text/css" rel="stylesheet">#}
+{#        <link href="{% static 'css/modern-menu.css'  %}" type="text/css" rel="stylesheet">#}
+
+
+{#通过改变JavaScript文件顺序使功能正常实现#}
+{#        <script src="{% static 'js/jquery.transit.min.js' %}" type="text/javascript"></script>#}
+{#        <script src="{% static 'js/jquery.modern-menu.min.js' %}" type="text/javascript"></script>#}
+{#        <script src="http://www.jq22.com/jquery/1.11.1/jquery.min.js"></script>#}
+
+        <script type="text/javascript" src="{% static 'js/jquery.cookie.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/jquery-3.2.1.js' %}"></script>
+        <script type="text/javascript" src="http://www.jq22.com/jquery/jquery-2.1.1.js"></script>
+        <script type="text/javascript" src="{% static 'js/mplayer.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/mplayer-list.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/mplayer-functions.js' %}"></script>
+        <script type="text/javascript" src="http://cdn.bootcss.com/jquery-nstslider/1.0.13/jquery.nstSlider.min.js"></script>
+        <script type="text/javascript" src="{% static 'js/semantic.js' %}"></script>
+
+        <style>
+            .ui.vertical.fluid.tabular.menu > a:hover {
+                background-color:lightcoral;
+                color: #ffffff;
+            }
+
+            * {
+                padding:0px;
+                margin:0px;
+            }
+            a {
+                text-decoration:none;
+            }
+            ul {
+                list-style:outside none none;
+            }
+            .slider,.slider-panel img,.slider-extra {
+                width:655px;
+                height:300px;
+            }
+            .slider {
+                text-align:center;
+{#                margin:30px auto;#}
+                position:relative;
+            }
+            .slider-panel,.slider-nav,.slider-pre,.slider-next {
+                position:absolute;
+                z-index:8;
+            }
+            .slider-panel {
+                position:absolute;
+            }
+            .slider-panel img {
+                border:none;
+            }
+            .slider-extra {
+                position:relative;
+            }
+            .slider-nav {
+                margin-left:-51px;
+                position:absolute;
+                left:50%;
+                bottom:4px;
+            }
+            .slider-nav li {
+                background:#3e3e3e;
+                border-radius:50%;
+                color:#fff;
+                cursor:pointer;
+                margin:0 2px;
+                overflow:hidden;
+                text-align:center;
+                display:inline-block;
+                height:18px;
+                line-height:18px;
+                width:18px;
+            }
+            .slider-nav .slider-item-selected {
+                background:rgba(255, 255, 255, 0.54);
+            }
+            .slider-page a {
+                background:rgba(0,0,0,0.2);
+                filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#33000000,endColorstr=#33000000);
+                color:#fff;
+                text-align:center;
+                display:block;
+                font-family:"simsun";
+                font-size:22px;
+                width:28px;
+                height:62px;
+                line-height:62px;
+                margin-top:-31px;
+                position:absolute;
+                top:50%;
+            }
+            .slider-page a:HOVER {
+                background:rgba(0,0,0,0.4);
+                filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000,endColorstr=#66000000);
+            }
+            .slider-next {
+                left:100%;
+                margin-left:-28px;
+            }
+            #left_nemu a:hover{
+                color: #ffffff;
+            }
+
+        </style>
+
+    </head>
+    <div class="ui following bar">
+    <!--菜单-->
+
+        <div class="ui menu fixed top_menu"style='background: url("{% static 'img/super_blur_back2.jpg' %}")'>
+          <div class="item weather" >
+              <a href="http://www.weather.com.cn/weather/101010100.shtml"><h4 class="ui inverted header">北京 晴 -5°/6°</h4></a>
+          </div>
+
+          <div class="right  menu">
+
+
+
+                {% if request.user.is_authenticated %}
+                    <div class="item">
+                        <h5 class="ui inverted header">
+                            <a class="ui avatar image" href="{% url 'information' request.user.username %}">
+                                {% if login_user.profile.avatar %}
+                                    <img src="/upload/{{ login_user.profile.avatar }}" alt="头像加载失败" />
+                                {% else %}
+                                    <img src="{% static 'img/avatar_1.png' %}" alt="头像加载失败" />
+                                {% endif %}
+                            </a>
+                            {% if login_user.profile.nickname %}
+                                <a style="color: white" href="{% url 'information' request.user.username %}">{{ login_user.profile.nickname }}</a>
+                            {% else %}
+                                <a style="color: white" href="{% url 'information' request.user.username %}">{{ login_user.username }}</a>
+                            {% endif %}
+
+                        </h5>
+                    </div>
+                    <div class="item">
+                        <a href="{% url 'logout' %}" class="ui inverted circular button"><i class="sign out icon"></i>注销</a>
+                    </div>
+
+                {% else %}
+
+                    <div class="item">
+                        <div class="ui buttons">
+                            <a href="{% url 'login' %}" class="ui inverted button"><i class="sign in icon"></i>登录</a>
+                            <!--<a onclick="$('.ui.login.modal').modal('show')" class="ui inverted button"><i class="sign in icon"></i>登录</a>-->
+                            <div class="or"></div>
+                            <a href="{% url 'register' %}" class="ui inverted button"><i class="write icon"></i>注册</a>
+                            <!--<a onclick="$('.ui.login.modal').modal('show')" class="ui inverted button"><i class="write icon"></i>注册</a>-->
+                        </div>
+                    </div>
+                {% endif %}
+              <a class="item" id="feedback">
+                  <h4 class="ui inverted header feedback" onclick="$('.ui.feedback.modal').modal('show')">反馈</h4>
+              </a>
+              <a class="item" id="more">
+                  <h4 class="ui inverted header more">更多</h4>
+              </a>
+          </div>
+        </div>
+    </div>
+    <!--内容-->
+        <div class="ui container content_page" style="padding-top: 50px; width:88%;height:auto;">
+{#            <div class="ui vertical segment content_page">#}
+                <div class="ui grid">
+                    <div class="two wide column vertical_menu" style="position: fixed" >
+
+
+                        <div class="ui vertical fluid tabular menu" id="left_nemu" style="border: 0;">
+{#                         <div class="title">#}
+{#                             <h2 class="ui center aligned header">新闻个性化推荐系统</h2>#}
+{#                         </div>#}
+{#                            <a href="#" ></a>#}
+                            {% if 'recommend' in request.path%}
+                                <a  href="{% url 'index'%}recommend" class="ui active button item" style="background-color: lightcoral; border:0;"><h3 class="ui header" style="color: white">推荐</h3> </a>
+                            {% else %}
+                                <a id="recommend" href="{% url 'index'%}recommend" class="ui red button item" style="color: #3b3c3c;font-weight: bolder;"><h4 class="ui header">推荐</h4></a>
+                            {% endif %}
+
+                            {% if 'china' in request.path%}
+                                <a href="{% url 'index'%}china" class="ui button active item" style="background-color: lightcoral;border:0; " > <h3 class="ui header" style="color: white">国内</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}china" class="ui red button item"style="color:#3b3c3c;font-weight: bolder;"><h4 class="ui header">国内 </h4> </a>
+                            {% endif %}
+
+                            {% if 'world' in request.path%}
+                                <a href="{% url 'index'%}world" class="ui button active  item" style="background-color: lightcoral;border:0; "> <h3 class="ui header" style="color: white">国际</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}world" class="ui red button item"style="color:#3b3c3c;font-weight: bolder; "><h4 class="ui header"> 国际</h4> </a>
+                            {% endif %}
+
+                            {% if 'social' in request.path%}
+                                <a href="{% url 'index'%}social" class="ui button active item" style="background-color: lightcoral;border:0; "> <h3 class="ui header" style="color: white">社会</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}social" class="ui red button item"style="color:#3b3c3c;font-weight: bolder; "> <h4 class="ui header">社会</h4> </a>
+                            {% endif %}
+
+                            {% if 'sports' in request.path%}
+                                <a href="{% url 'index'%}sports" class="ui button active item" style="background-color: lightcoral; border:0;"> <h3 class="ui header" style="color: white">体育</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}sports" class="ui red button item"style="color:#3b3c3c;font-weight: bolder; "><h4 class="ui header">体育</h4> </a>
+                            {% endif %}
+
+                            {% if 'economic' in request.path%}
+                                <a href="{% url 'index'%}economic" class="ui button active item" style="background-color: lightcoral;border:0; ">  <h3 class="ui header"style="color: white">财经</h3></a>
+                            {% else %}
+                                <a href="{% url 'index'%}economic" class="ui red button item"style="color:#3b3c3c;font-weight: bolder; "> <h4 class="ui header">财经</h4> </a>
+                            {% endif %}
+
+
+                            {% if 'mil' in request.path%}
+                                <a href="{% url 'index'%}mil" class="ui button active item" style="background-color: lightcoral;border:0; "> <h3 class="ui header" style="color: white">军事</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}mil" class="ui red button item"style="color:#3b3c3c;font-weight: bolder; "> <h4 class="ui header">军事</h4> </a>
+                            {% endif %}
+
+                            {% if 'tech' in request.path%}
+                                <a href="{% url 'index'%}tech" class="ui button active item" style="background-color: lightcoral;border:0; "> <h3 class="ui header" style="color: white">科技</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}tech" class="ui red button item"style="color:#3b3c3c;font-weight: bolder; "> <h4 class="ui header">科技</h4> </a>
+                            {% endif %}
+
+                            {% if 'funny' in request.path%}
+                                <a href="{% url 'index'%}funny" class="ui button active item" style="background-color: lightcoral;border:0; "> <h3 class="ui header" style="color: white">搞笑</h3> </a>
+                            {% else %}
+                                <a href="{% url 'index'%}funny" class="ui red button item"style="color:#3b3c3c;font-weight: bolder; "><h4 class="ui header"> 搞笑</h4> </a>
+                            {% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="nine wide stretched column" style="margin-left: 160px">
+                     <!--轮播图-->
+                     <div class="slider">
+                                <ul class="slider-main">
+                                    <li class="slider-panel">
+                                        <a href="#"><img alt="" title="" src="{% static 'img/banner.jpg'  %}"></a>
+                                    </li>
+                                    <li class="slider-panel">
+                                        <a href="#"><img alt="" title="" src="{% static 'img/banner.png'  %}"></a>
+                                    </li>
+                                    <li class="slider-panel">
+                                        <a href="#"><img alt="" title="" src="{% static 'img/banner.jpg'  %}"></a>
+                                    </li>
+                                    <li class="slider-panel">
+                                        <a href="#"><img alt="" title="" src="{% static 'img/banner.png'  %}"></a>
+                                    </li>
+                                </ul>
+                                <div class="slider-extra">
+                                    <ul class="slider-nav">
+                                        <li class="slider-item">1</li>
+                                        <li class="slider-item">2</li>
+                                        <li class="slider-item">3</li>
+                                        <li class="slider-item">4</li>
+                                    </ul>
+                                    <div class="slider-page">
+                                        <a class="slider-pre" href="javascript:;">
+                                            <</a>
+                                                <a class="slider-next" href="javascript:;">></a>
+                                    </div>
+                                </div>
+                            </div>
+                    <script>
+                            $(document).ready(function() {
+                                var length,
+                                    currentIndex = 0,
+                                    interval,
+                                    hasStarted = false, //是否已经开始轮播
+                                    t = 3000; //轮播时间间隔
+                                length = $('.slider-panel').length;
+                                //将除了第一张图片隐藏
+                                $('.slider-panel:not(:first)').hide();
+                                //将第一个slider-item设为激活状态
+                                $('.slider-item:first').addClass('slider-item-selected');
+                                //隐藏向前、向后翻按钮
+                                $('.slider-page').hide();
+                                //鼠标上悬时显示向前、向后翻按钮,停止滑动，鼠标离开时隐藏向前、向后翻按钮，开始滑动
+                                $('.slider-panel, .slider-pre, .slider-next').hover(function() {
+                                    stop();
+                                    $('.slider-page').show();
+                                }, function() {
+                                    $('.slider-page').hide();
+                                    start();
+                                });
+                                $('.slider-item').hover(function(e) {
+                                    stop();
+                                    var preIndex = $(".slider-item").filter(".slider-item-selected").index();
+                                    currentIndex = $(this).index();
+                                    play(preIndex, currentIndex);
+                                }, function() {
+                                    start();
+                                });
+                                $('.slider-pre').unbind('click');
+                                $('.slider-pre').bind('click', function() {
+                                    pre();
+                                });
+                                $('.slider-next').unbind('click');
+                                $('.slider-next').bind('click', function() {
+                                    next();
+                                });
+                                /**
+                                 * 向前翻页
+                                 */
+                                function pre() {
+                                    var preIndex = currentIndex;
+                                    currentIndex = (--currentIndex + length) % length;
+                                    play(preIndex, currentIndex);
+                                }
+                                /**
+                                 * 向后翻页
+                                 */
+                                function next() {
+                                    var preIndex = currentIndex;
+                                    currentIndex = ++currentIndex % length;
+                                    play(preIndex, currentIndex);
+                                }
+                                /**
+                                 * 从preIndex页翻到currentIndex页
+                                 * preIndex 整数，翻页的起始页
+                                 * currentIndex 整数，翻到的那页
+                                 */
+                                function play(preIndex, currentIndex) {
+                                    $('.slider-panel').eq(preIndex).fadeOut(500)
+                                        .parent().children().eq(currentIndex).fadeIn(1000);
+                                    $('.slider-item').removeClass('slider-item-selected');
+                                    $('.slider-item').eq(currentIndex).addClass('slider-item-selected');
+                                }
+                                /**
+                                 * 开始轮播
+                                 */
+                                function start() {
+                                    if (!hasStarted) {
+                                        hasStarted = true;
+                                        interval = setInterval(next, t);
+                                    }
+                                }
+                                /**
+                                 * 停止轮播
+                                 */
+                                function stop() {
+                                    clearInterval(interval);
+                                    hasStarted = false;
+                                }
+                                //开始轮播
+                                start();
+                            })
+                            ;</script>
+
+                        <div class="ui raised segment news_page">
+
+                         {% for article in article_list %}
+
+                             <div class="ui raised segment news">
+                               <div class="ui grid">
+                                <div class="six wide column ui image">
+                                    <img src="{% static 'img/img3.jpg' %}" alt="" style="width:100%;height: 100%">
+
+                                </div>
+
+                                <div class="ten wide column">
+                                    <a href="{% url 'detail' article.id %}">
+
+                                        <h2 class="ui header">{{ article.headline}}</h2>
+                                    </a>
+                                    <div style="margin-bottom: 5px;">
+                                        {{ article.content|truncatechars:70}}z
+                                        <div>
+                                             <a href="{% url 'detail' article.id %}" style="color: grey;">
+                                                 <i class="angle tiny double grey right icon"></i>
+                                                    阅读更多
+                                             </a>
+                                        </div>
+                                    </div>
+                                <div class="ui form" ></div>
+
+                                    {% ifequal article.tag '国内'%}
+                                        <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}china"> {{ article.tag }}</a>
+                                    {% else %}
+                                        {% ifequal article.tag '国际'%}
+                                            <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}world"> {{ article.tag }}</a>
+                                        {% else %}
+                                            {% ifequal article.tag '社会'%}
+                                                <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}social"> {{ article.tag }}</a>
+                                            {% else %}
+                                                {% ifequal article.tag '体育'%}
+                                                    <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}sports"> {{ article.tag }}</a>
+                                                {% else %}
+                                                    {% ifequal article.tag '财经'%}
+                                                        <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}economic"> {{ article.tag }}</a>
+                                                    {% else %}
+                                                        {% ifequal article.tag '军事'%}
+                                                            <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}mil"> {{ article.tag }}</a>
+                                                        {% else %}
+                                                            {% ifequal article.tag '科技'%}
+                                                                <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}tech"> {{ article.tag }}</a>
+                                                            {% else %}
+                                                                {% ifequal article.tag '搞笑' %}
+                                                                    <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}funny"> {{ article.tag }}</a>
+                                                                {% else %}
+                                                                    <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}funny"> {{ article.tag }}</a>
+                                                                {% endifequal %}
+                                                            {% endifequal %}
+                                                        {% endifequal %}
+                                                    {% endifequal %}
+                                                {% endifequal %}
+                                            {% endifequal %}
+                                        {% endifequal %}
+                                    {% endifequal %}
+
+
+                                    <span class="" style="color:rgb(226, 226, 226)">|</span>
+                                    <span style="color: grey;"> {{ article.source }}</span>
+                                    <span class="" style="color:rgb(226, 226, 226)">|</span>
+                                    <span style="color: darkgrey">{{ article.date }}</span>
+
+                                </div>
+
+                                </div>
+
+
+                             </div>
+
+
+
+
+
+
+                        {% endfor %}
+
+                            <div class="ui vertical basic borderless segment container">
+                                <div class="ui two item center menu">
+                                    {% if article_list.has_previous %}
+                                        <a class="item" href="?page={{ article_list.previous_page_number }}">
+                                            <i class="icon green left arrow"></i>
+                                        </a>
+                                    {% else %}
+                                        <a class="disabled item">
+                                            <i class="icon left arrow"></i>
+                                        </a>
+                                    {% endif %}
+
+                                    {% if article_list.has_next %}
+                                        <a class="item" href="?page={{ article_list.next_page_number }}">
+                                            <i class="icon green right arrow"></i>
+                                        </a>
+                                    {% else %}
+                                        <a class="disabled item">
+                                            <i class="icon right arrow"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="four wide column">
+                         <div class="item">
+                              <form method="post" action="">
+                                <div class="ui action input">
+                                  <input type="text" placeholder="Search...">
+                                    {% csrf_token %}
+                                  <button class="ui button">搜索</button>
+                                </div>
+                              </form>
+                         </div>
+
+                        <div class="ui ignored divider"></div>
+                    <h2 class="ui header" style="margin-top: 0;">24小时热闻</h2>
+                        <div class="ui people shape">
+                          <div class="sides">
+                            <div class="active side" style="width: 243px; height:320px;">
+                              <div class="ui link card" style="width: 243px; height:320px;">
+                                <div class="image" style="width: 243px; height:240px;">
+                                  <img src="{% static 'img/img2.jpg' %}" style="width: 100%;height:100%;">
+                                </div>
+                                <div class="content">
+                                  <div class="header">headline</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="side">
+                              <div class="ui link card">
+                                <div class="image">
+                                  <img src="{% static 'img/avatar_1.png' %}">
+                                </div>
+                                <div class="content">
+                                  <a class="header">Stevie Feliciano</a>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+{#                            <div class="ui ignored divider"></div>#}
+{#                            <div class="ui ignored icon direction buttons">#}
+{#                            <div class="ui button" data-animation="flip" title="Flip Left" data-direction="left"><i class="left long arrow icon"></i></div>#}
+{#                            <div class="ui icon button" data-animation="flip" title="Flip Right" data-direction="right"><i class="right long arrow icon"></i></div>#}
+{#                            </div>#}
+
+                        </div>
+
+                        <div class="ui ignored divider"></div>
+                        <div class="friendLink module" ga_event="click_friend_link">
+                        <h2 class="ui header">友情链接</h2>
+                        <div class="link-content">
+
+                            <button class="ui mini inverted red button"><a target="_blank" href="http://www.gmw.cn/">光明网</a></button>
+                            <button class="ui mini inverted orange button"><a target="_blank" href="http://www.cnr.cn/">央广网</a></button>
+                            <button class="ui mini inverted green button"><a target="_blank" href="http://www.cri.cn">国际在线</a></button>
+                            <button class="ui mini inverted yellow button"><a target="_blank" href="http://www.cankaoxiaoxi.com/">参考消息</a></button>
+                            <button class="ui mini inverted olive button"><a target="_blank" href="http://www.huanqiu.com/">环球网</a></button>
+                            <button class="ui mini inverted blue button"><a target="_blank" href="http://www.cyol.com">中青在线</a></button>
+                            <button class="ui mini inverted teal button"><a target="_blank" href="http://www.youth.cn/">中青网</a></button>
+                            <button class="ui mini inverted violet button"><a target="_blank" href="http://www.haiwainet.cn/">海外网</a></button>
+                            <button class="ui mini inverted purple button"><a target="_blank" href="http://h5.china.com.cn">中国网</a></button>
+                            <button class="ui mini inverted pink button"><a target="_blank" href="http://www.k618.cn/">未来网</a></button>
+                            <button class="ui mini inverted brown button"><a target="_blank" href="http://www.bjnews.com.cn/">新京报</a></button>
+                            <button class="ui mini inverted grey button"><a target="_blank" href="http://www.ynet.com/">北青网</a></button>
+                            <button class="ui mini inverted olive button"><a target="_blank" href="http://www.fawan.com/">法制晚报</a></button>
+                            <button class="ui mini inverted yellow button"><a target="_blank" href="http://www.morningpost.com.cn">北京晨报</a></button>
+                            <button class="ui mini inverted red button"><a target="_blank" href="http://www.bbtnews.com.cn/">北京商报</a></button>
+                            <button class="ui mini inverted pink button"><a target="_blank" href="http://www.stardaily.com.cn/">北京娱乐信报</a></button>
+                            <button class="ui mini inverted blue button"><a target="_blank" href="http://www.hsw.cn/">华商网</a></button>
+                            <button class="ui mini inverted teal button"><a target="_blank" href="http://www.xinmin.cn">新民网</a></button>
+                            <button class="ui mini inverted orange button"><a target="_blank" href="http://www.jschina.com.cn">中国江苏网</a></button>
+                            <button class="ui mini inverted purple button"><a target="_blank" href="http://www.jxnews.com.cn/">中国江西网</a></button>
+                            <button class="ui mini inverted green button"><a target="_blank" href="http://www.iqilu.com/">齐鲁网</a></button>
+                            <button class="ui mini inverted violet button"><a target="_blank" href="http://www.hinews.cn/news/">南海网</a></button>
+                            <button class="ui mini inverted orange button"><a target="_blank" href="http://www.mnw.cn/">闽南网</a></button>
+                            <button class="ui mini inverted teal button"><a target="_blank" href="http://www.hxnews.com/">海峡网</a></button>
+                            <button class="ui mini inverted pink button"><a target="_blank" href="http://www.voc.com.cn/">华声在线</a></button>
+
+                            <button class="ui mini inverted green button"><a target="_blank" href="http://www.autohome.com.cn/">汽车之家</a></button>
+                            <button class="ui mini inverted blue button"><a target="_blank" href="http://www.onlylady.com/">Onlylady女人志</a></button>
+                            <button class="ui mini inverted olive button"><a target="_blank" href="http://123.chinaso.com/">中国搜索</a></button>
+                            <button class="ui mini inverted brown button"><a target="_blank" href="http://www.nbd.com.cn/">每日经济新闻</a></button>
+
+                            <button class="ui mini inverted grey button"><a target="_blank" href="http://www.enorth.com.cn/">北方网</a></button>
+                            </div>
+                        </div>
+                        <div class="ui divider"></div>
+                        <div class="ui basic segment" style="background-color: #e4e5e5">
+                            <p>
+                                design by: @zhangbohang#}
+                                design by: @zhangbohang#}
+                                design by: @zhangbohang#}
+                                design by: @zhangbohang#}
+                            </p>
+
+                        </div>
+
+                    </div>
+                </div>
+
+        </div>
+
+
+
+  </div>
+    <!--页脚-->
+
+{#        <div class="ui container very padded right floated">#}
+{##}
+{#                design by: @zhangbohang#}
+{##}
+{#        </div>#}
+
+
+<!--FEEDBACK-->
+       <div class="ui feedback modal">
+            <i class="close icon"></i>
+
+            <div class="content">
+              <div class="ui form">
+                <h4 class="ui dividing header">请告诉我们您要反馈的内容</h4>
+                <div class="field">
+                  <label>反馈</label>
+                  <textarea></textarea>
+                </div>
+                <div class="field">
+                  <div class="ui checkbox">
+                    <input type="checkbox" checked="checked" name="contact-me">
+                    <label>可以联系我</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+                 <button class="ui button" onclick="$('.ui.modal').modal('hide')">Cancel</button>
+                <buttom type="submit" class="ui green button">Send</buttom>
+            </div>
+       </div>
+    <!--login-->
+    <div class="ui login modal">
+
+        <div class="ui grid divided segment container" style="min-height: 400px;
+                width:600px !important;
+                border:rgba(255, 0, 0, 0);
+                position: absolute;
+                left: 50%;
+                top:40%;
+                transform: translate(-50%,-50%);">
+            <div class="five wide  column" style="background: url({% static 'img/red_regi.jpg'  %});background-size: cover;background-position: 60% 0%;">
+
+                <h4 class="ui inverted header" style="font-family: 'Play', sans-serif !important;">
+                    <a href="{% url 'index' %}" style="color: white;"><i class="reply all icon"></i>
+
+                    </a>
+
+                </h4>
+
+                <h1 class="ui inverted center aligned header" style="font-size: 40px;margin-top:55px">
+                        <p class="sub header">
+                        Welcome to
+                    </p>
+                </h1>
+
+            </div>
+
+            <div class="eleven wide column">
+                <h4 class="ui inverted right aligned header" style="font-family: 'Play', sans-serif !important;">
+                    <a href="{% url 'register' %}" style="color:#ff695e;">or Register</a>
+                </h4>
+
+                <form class="ui form error" method="post">
+
+                    {% if form.errors %}
+                        <div class="ui error message">
+                            {{ form.errors }}
+                        </div>
+
+                        {% for field in form  %}
+                            <div class="{{ field.errors|yesno:'error, ' }} field">
+                                {{ field.label }}
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+
+                    {% else %}
+                        {% for field in form  %}
+                            <div class="field">
+                                {{ field.label }}
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+
+                    {% endif %}
+
+                    {% csrf_token %}
+
+                    <button class="ui inverted red circular right floated button" type="submit">Done</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   <!--register-->
+<div class="ui register modal">
+
+
+    <div class="ui grid segment container divided" style="min-height: 400px;
+                width:600px !important;
+                border:rgba(255, 0, 0, 0);
+                position: absolute;
+                left: 50%;
+                top:40%;
+                transform: translate(-50%,-50%);">
+        <div class="five wide column " style="background: url({% static 'img/red_regi.jpg'  %});background-size: cover;background-position: 60% 0%;">
+            <h4 class="ui inverted header" style="font-family: 'Play', sans-serif !important;">
+                <i class="icon angle left"></i>
+            </h4>
+        </div>
+        <div class="eleven wide column">
+            <h4 class="ui right aligned header inverted red" style="font-family: 'Play', sans-serif !important;">OR LOGIN</h4>
+            <form action="#" method="post" class="ui basic borderless segment form">
+
+                    {% if form.errors %}
+                        <div class="ui error message">
+                            {{ form.errors }}
+                        </div>
+
+                        {% for field in form  %}
+                            <div class="{{ field.errors|yesno:'error, ' }} field">
+                                {{ field.label }}
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+
+                    {% else %}
+                        {% for field in form  %}
+                            <div class="field">
+                                {{ field.label }}
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+
+                    {% endif %}
+
+                    {% csrf_token %}
+
+            </form>
+            <button class="ui inverted circular red right floated button">click</button>
+        </div>
+    </div>
+
+</div>
+
+
+
+<!--音乐播放器-->
+<div class="mp" style="z-index: 1000;">
+	<div class="mp-box">
+		<img src="img/mplayer_error.png" alt="music cover" class="mp-cover">
+		<div class="mp-info">
+			<p class="mp-name">燕归巢</p>
+			<p class="mp-singer">许嵩</p>
+			<p><span class="mp-time-current">00:00</span>/<span class="mp-time-all">00:00</span></p>
+		</div>
+		<div class="mp-btn">
+			<button class="mp-prev" title="上一首"></button>
+			<button class="mp-pause" title="播放"></button>
+			<button class="mp-next" title="下一首"></button>
+			<button class="mp-mode" title="播放模式"></button>
+			<div class="mp-vol">
+				<button class="mp-vol-img" title="静音"></button>
+				<div class="mp-vol-range" data-range_min="0" data-range_max="100" data-cur_min="80">
+					<div class="mp-vol-current"></div>
+					<div class="mp-vol-circle"></div>
+				</div>
+			</div>
+		</div>
+		<div class="mp-pro">
+			<div class="mp-pro-current"></div>
+		</div>
+		<div class="mp-menu">
+			<button class="mp-list-toggle"></button>
+			<button class="mp-lrc-toggle"></button>
+		</div>
+	</div>
+	<button class="mp-toggle">
+		<span class="mp-toggle-img"></span>
+	</button>
+	<div class="mp-lrc-box">
+		<ul class="mp-lrc"></ul>
+	</div>
+	<button class="mp-lrc-close"></button>
+	<div class="mp-list-box">
+		<ul class="mp-list-title"></ul>
+		<table class="mp-list-table">
+			<thead>
+				<tr>
+					<th>歌名</th>
+					<th>歌手</th>
+					<th>时长</th>
+				</tr>
+			</thead>
+			<tbody class="mp-list"></tbody>
+		</table>
+	</div>
+</div>
+{#        <script type="text/javascript" src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>#}
+        <script type="text/javascript" src="{% static 'js/mplayer.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/mplayer-list.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/mplayer-functions.js' %}"></script>
+        <script type="text/javascript" src="http://cdn.bootcss.com/jquery-nstslider/1.0.13/jquery.nstSlider.min.js"></script>
+
+<script>
+
+var modeText = ['顺序播放','单曲循环','随机播放','列表循环'];
+var player = new MPlayer({
+	// 容器选择器名称
+	containerSelector: '.mp',
+	// 播放列表
+	songList: mplayer_song,
+	// 专辑图片错误时显示的图片
+	defaultImg: 'img/mplayer_error.png',
+	// 自动播放
+	autoPlay: true,
+	// 播放模式(0->顺序播放,1->单曲循环,2->随机播放,3->列表循环(默认))
+	playMode:0,
+	playList:0,
+	playSong:0,
+	// 当前歌词距离顶部的距离
+	lrcTopPos: 34,
+	// 列表模板，用${变量名}$插入模板变量
+	listFormat: '<tr><td>${name}$</td><td>${singer}$</td><td>${time}$</td></tr>',
+	// 音量滑块改变事件名称
+	volSlideEventName:'change',
+	// 初始音量
+	defaultVolume:80
+}, function () {
+	// 绑定事件
+	this.on('afterInit', function () {
+		console.log('播放器初始化完成，正在准备播放');
+	}).on('beforePlay', function () {
+		var $this = this;
+		var song = $this.getCurrentSong(true);
+		var songName = song.name + ' - ' + song.singer;
+		console.log('即将播放'+songName+'，return false;可以取消播放');
+	}).on('timeUpdate', function () {
+		var $this = this;
+		console.log('当前歌词：' + $this.getLrc());
+	}).on('end', function () {
+		var $this = this;
+		var song = $this.getCurrentSong(true);
+		var songName = song.name + ' - ' + song.singer;
+		console.log(songName+'播放完毕，return false;可以取消播放下一曲');
+	}).on('mute', function () {
+		var status = this.getIsMuted() ? '已静音' : '未静音';
+		console.log('当前静音状态：' + status);
+	}).on('changeMode', function () {
+		var $this = this;
+		var mode = modeText[$this.getPlayMode()];
+		$this.dom.container.find('.mp-mode').attr('title',mode);
+		console.log('播放模式已切换为：' + mode);
+	});
+});
+
+
+$(document.body).append(player.audio); // 测试用
+
+setEffects(player);
+
+
+</script>
+    </body>
+</html>
+
+

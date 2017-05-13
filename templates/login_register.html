@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+{% load  staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录/注册</title>
+    <link rel="stylesheet" href="{% static 'css/semantic.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Oswald|Raleway" rel="stylesheet">
+    <style>
+
+          body {
+                background: url({% static 'img/super_blur_back2.jpg' %});
+                background-size: cover;
+            }
+
+            .ui.grid.divided.segment.container{
+                min-height: 400px;
+                width:600px !important;
+                border:rgba(255, 0, 0, 0);
+                position: absolute;
+                left: 50%;
+                top:40%;
+                transform: translate(-50%,-50%);
+            }
+
+            .five.wide.column {
+                background: url({% static 'img/red_regi.jpg'  %});
+                background-size: cover;
+                background-position: 60% 0%;
+            }
+
+            form {
+                margin-top: 60px;
+            }
+            h1,h3,h4{
+                font-family: 'Play', sans-serif !important;
+
+            }
+    </style>
+
+</head>
+<body>
+    <div class="ui grid segment container divided" >
+        <div class="five wide column ">
+            <h4 class="ui inverted header">
+                <i class="icon angle left"></i>
+            </h4>
+        </div>
+        <div class="eleven wide column">
+            <h4 class="ui right aligned header inverted red">OR LOGIN</h4>
+            <form action="#" method="post" class="ui basic borderless segment form">
+
+                    {% if form.errors %}
+                        <div class="ui error message">
+                            {{ form.errors }}
+                        </div>
+
+                        {% for field in form  %}
+                            <div class="{{ field.errors|yesno:'error, ' }} field">
+                                {{ field.label }}
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+
+                    {% else %}
+                        {% for field in form  %}
+                            <div class="field">
+                                {{ field.label }}
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+
+                    {% endif %}
+
+                    {% csrf_token %}
+
+            </form>
+            <button class="ui inverted circular red right floated button">click</button>
+        </div>
+    </div>
+
+</body>
+</html>

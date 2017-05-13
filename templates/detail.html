@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+{% load  staticfiles %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>详情</title>
+{#        <link rel="icon" type="image/png" href="{% static 'img\design_icon.png'%}">#}
+        <link rel="stylesheet" href=" {% static "css/semantic.css" %} " media="screen" title="no title" charset="utf-8">
+        <link href="https://fonts.googleapis.com/css?family=Oswald|Raleway" rel="stylesheet">
+
+         <script type="text/javascript" src="http://www.jq22.com/jquery/jquery-2.1.1.js"></script>
+        <script type="text/javascript" src="{% static 'js/mplayer.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/mplayer-list.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/mplayer-functions.js' %}"></script>
+        <script type="text/javascript" src="http://cdn.bootcss.com/jquery-nstslider/1.0.13/jquery.nstSlider.min.js"></script>
+        <link rel="stylesheet" href="{% static 'css/mplayer.css' %}">
+        <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+        <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/jquery.cookie.js' %}"></script>
+
+
+
+        <script type="text/javascript" src="{% static 'js/semantic.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/tongji.js' %}"></script>
+
+
+
+        <style type="text/css">
+             .ui.segment.container {
+                width:700px;
+            }
+
+            p {
+                font-family: 'Raleway', sans-serif;
+                font-size:18px;
+            }
+
+            body {
+{#                background:url('{% static 'img/super_blur_back2.jpg' %}');#}
+                background-size: auto;
+                background-repeat:no-repeat;
+                background-attachment:fixed
+            }
+            .ui.fixed.menu.top_menu{
+                box-sizing: border-box;
+                background: url("{% static 'img/super_blur_back2.jpg' %}");
+                border:0;
+                height:35px;
+            }
+
+            .ui.vertical.segment{
+                margin-top: 50px;
+            }
+
+
+         </style>
+
+
+    </head>
+    <body>
+    <div class="ui fixed fixed menu top_menu">
+          <div class="item weather">
+              <a href="http://www.weather.com.cn/weather/101010100.shtml"><h4 class="ui inverted header">北京 晴 -5°/6°</h4></a>
+          </div>
+          <a class="item title" href="{% url 'index'%}">
+{#              <h2 class="ui center aligned inverted header">新闻个性化推荐系统</h2>#}
+          </a>
+          <div class="right menu">
+                {% if request.user.is_authenticated %}
+                    <div class="item">
+                        <h5 class="ui inverted header">
+                            <a class="ui avatar image" href="{% url 'information' request.user.username %}">
+                                {% if login_user.profile.avatar %}
+                                    <img src="/upload/{{ login_user.profile.avatar }}" alt="头像加载失败" />
+                                {% else %}
+                                    <img src="{% static 'img/avatar_1.png' %}" alt="头像加载失败" />
+                                {% endif %}
+                            </a>
+                            {% if login_user.profile.nickname %}
+                                <a style="color: white" href="{% url 'information' request.user.username %}">{{ login_user.profile.nickname }}</a>
+                            {% else %}
+                                <a style="color: white" href="{% url 'information' request.user.username %}">{{ login_user.username }}</a>
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="item">
+                        <a href="{% url 'logout' %}" class="ui inverted circular button"><i class="sign out icon"></i>注销</a>
+                    </div>
+
+                {% else %}
+
+                    <div class="item">
+                       <div class="ui buttons">
+                            <a href="{% url 'login' %}" class="ui inverted button"><i class="sign in icon"></i>登录</a>
+                            <div class="or"></div>
+                            <a href="{% url 'register' %}" class="ui inverted button"><i class="write icon"></i>注册</a>
+                        </div>
+                    </div>
+                {% endif %}
+              <div class="item" id="feedback">
+                  <a href="#"><h4 class="ui inverted header feedback">反馈</h4></a>
+              </div>
+              <div class="item" id="more">
+                  <a href=""><h4 class="ui inverted header more">更多</h4></a>
+              </div>
+          </div>
+        </div>
+
+        <div class="ui  segment padded container" style='margin-top: 54px; width:700px; background: url("{% static 'img/paper1.jpg' %}");background-repeat: no-repeat;background-size: 100% 100%;border-radius: 10px'>
+            <h1 class="ui header" style="font-family:'Oswald', sans-serif;font-size:40px">
+                {{ article.headline }}
+            </h1>
+            <i class="icon grey checkmark"></i>
+            <span style="color:#bbbbbb">{{ article.like }} 人喜欢</span>
+            <span class="" style="color:rgb(226, 226, 226)">|</span>
+            <i class="icon grey bomb"></i>
+            <span style="color:#bbbbbb">{{ article.dislike }} 人踩了</span>
+            <span class="" style="color:rgb(226, 226, 226)">|</span>
+            <span style="color:#bbbbbb">{{ article.date }}</span>
+            <span class="" style="color:rgb(226, 226, 226)">|</span>
+            <span style="color:#bbbbbb">{{ article.source }}</span>
+
+
+            <div class="ui divider"></div>
+            <p>
+               {{ article.content }}
+            </p>
+            <form class="ui form" action="{% url 'vote' article.id %}" method="post">
+                {% csrf_token %}
+                {% if request.user.is_authenticated %}
+                    {% ifequal user_voted.choice 'like' %}
+                         <button class="ui active secondly red tiny button" type="submit" name="vote" value="like" >
+                            <i class="thumbs up icon"></i>
+                            已点赞^@^
+                        </button>
+                    {% else %}
+                         <button class="ui  red tiny button" type="submit" name="vote" value="like" >
+                            <i class="thumbs outline up icon"></i>
+                            点赞^@^
+                         </button>
+                    {% endifequal %}
+
+                    {% ifequal user_voted.choice 'dislike' %}
+                         <button class="ui active tiny button" type="submit" name="vote" value="dislike" >
+                            <i class="thumbs down icon"></i>
+                            踩了一下
+                        </button>
+                    {% else %}
+                        <button class="ui  tiny button" type="submit" name="vote" value="dislike" >
+                            <i class="thumbs outline down icon"></i>
+                            踩一下
+                        </button>
+                    {% endifequal %}
+
+                {% else %}
+                    <button class="ui  red tiny button" type="submit" name="vote" value="like" >
+                        <i class="thumbs outline up icon"></i>
+                        点赞^@^
+                    </button>
+                    <button class="ui  tiny button" type="submit" name="vote" value="dislike" >
+                        <i class="thumbs outline down icon"></i>
+                        踩一下
+                    </button>
+                {% endif %}
+            <button class="ui tiny right floated black button"><i class="ui share icon"></i>分享</button>
+            </form>
+        </div>
+
+        <!-- Comments&Form's here -->
+        <div class="ui segment container" style="width:700px;">
+            <h2 class="ui header" style="font-family:'Oswald', sans-serif;">评论</h2>
+            <h4 style="color:#bbbbbb"><i class="ui comments icon"></i>{{ article.under_comments.count }}人评论</h4>
+            <div class="ui comments">
+             {% if best_comment %}
+                    <div class="ui mini red left ribbon label">
+                        <i class="icon fire"></i>
+                        BEST
+                    </div>
+                    <div class="best comment">
+                        <div class="avatar">
+                            <img style="width:35px;height:35px;" src="/upload/{{ best_comment.name.avatar }}"  alt="" />
+                        </div>
+                        <div class="content">
+                            <a href="#" class="author">{{best_comment.name.nickname}}</a>
+                            <div class="metadata">
+                                <div class="date">2 days ago</div>
+                            </div>
+                            <p class="text" style="font-family: 'Raleway', sans-serif;">
+                                {{ best_comment.comment }}
+                            </p>
+
+                        </div>
+                    </div>
+                    <div class="ui divider"></div>
+                {% endif %}
+
+                {% for comment in article.under_comments.all %}
+                    <div class="comment">
+                        <div class="avatar">
+                            {% if login_user.profile.avatar %}
+                            <img src="/upload/{{ comment.name.avatar }}" alt="头像加载失败" />
+                            {% else %}
+                                <img src="{% static 'img/avatar_1.png' %}" alt="头像加载失败" />
+                            {% endif %}
+                        </div>
+                        <div class="content">
+                            <a href="#" class="author">{{comment.name.nickname}}</a>
+                            <div class="metadata">
+                                <div class="date">{{comment.time}}</div>
+                            </div>
+                            <p class="text" style="font-family: 'Raleway', sans-serif;">
+                                {{comment.comment}}
+                            </p>
+                                <a href=""><i class="thumbs outline down icon"></i>赞同</a>
+                                <a href=""><i class="thumbs outline up icon"></i>反对</a>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+            <div class="ui divider"></div>
+            <form class="ui error form" action="{% url 'comment' article.id %}" method="post">
+
+                {% if form.errors  %}
+                    <div class="ui error message">
+                        {{ form.errors }}
+                    </div>
+                    {% for field in form %}
+                        <div class="ui error field">
+                            {{field.label}}
+                            {{field}}
+                        </div>
+                    {% endfor %}        
+                {% else %}
+                    {% for field in form %}
+                        <div class="ui form">
+                            {{field.label}}
+                            {{field}}
+                        </div>
+                    {% endfor %}                    
+                {% endif %}
+                {% csrf_token %}
+                <div class="ui basic segment" style="padding-left:0;">
+                    <button type="submit" class="ui blue button" style="" ><i class="write icon"></i>评论</button>
+                </div>              
+            </form>
+
+        </div>
+        <!--页脚-->
+
+        <div class="ui vertical basic inverted very padded segment">
+            <div class="ui grid">
+
+                <div class="four wide column">
+                    <div class="ui image">
+                        <img src="" alt="">
+                    </div>
+                </div>
+
+                <div class="four wide column">
+                    <div class="ui inverted vertical text menu">
+                        <h3 class="item header" style="color:#ffffff;">信息</h3>
+                        <a class="item" href="#">关于我们</a>
+                        <a class="item" href="#" >联系我们</a>
+                        <a class="item" href="#" >blog</a>
+                    </div>
+                </div>
+
+                <div class="four wide column">
+                    <div class="ui inverted vertical text menu">
+                        <h3 class="item header" style="color:#ffffff;" >社交网络</h3>
+                        <a class="item" href="#" ><i class="weibo icon"></i>新浪微博</a>
+                        <a class="item" href="#" ><i class="mail icon"></i>电子邮件</a>
+                        <a class="item" href="#" ><i class="github icon"></i>github</a>
+                    </div>
+                </div>
+
+                <div class="four wide column">
+                    <div class="ui vertical text menu">
+                        <p>DESIGN BY</p>
+                        <h2 class="ui header"><a href="#" style="color: #e2e2e2 ">zhangbohang</a></h2>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    <!--音乐播放器-->
+<div class="mp">
+	<div class="mp-box">
+		<img src="img/mplayer_error.png" alt="music cover" class="mp-cover">
+		<div class="mp-info">
+			<p class="mp-name">燕归巢</p>
+			<p class="mp-singer">许嵩</p>
+			<p><span class="mp-time-current">00:00</span>/<span class="mp-time-all">00:00</span></p>
+		</div>
+		<div class="mp-btn">
+			<button class="mp-prev" title="上一首"></button>
+			<button class="mp-pause" title="播放"></button>
+			<button class="mp-next" title="下一首"></button>
+			<button class="mp-mode" title="播放模式"></button>
+			<div class="mp-vol">
+				<button class="mp-vol-img" title="静音"></button>
+				<div class="mp-vol-range" data-range_min="0" data-range_max="100" data-cur_min="80">
+					<div class="mp-vol-current"></div>
+					<div class="mp-vol-circle"></div>
+				</div>
+			</div>
+		</div>
+		<div class="mp-pro">
+			<div class="mp-pro-current"></div>
+		</div>
+		<div class="mp-menu">
+			<button class="mp-list-toggle"></button>
+			<button class="mp-lrc-toggle"></button>
+		</div>
+	</div>
+	<button class="mp-toggle">
+		<span class="mp-toggle-img"></span>
+	</button>
+	<div class="mp-lrc-box">
+		<ul class="mp-lrc"></ul>
+	</div>
+	<button class="mp-lrc-close"></button>
+	<div class="mp-list-box">
+		<ul class="mp-list-title"></ul>
+		<table class="mp-list-table">
+			<thead>
+				<tr>
+					<th>歌名</th>
+					<th>歌手</th>
+					<th>时长</th>
+				</tr>
+			</thead>
+			<tbody class="mp-list"></tbody>
+		</table>
+	</div>
+</div>
+
+<script>
+var modeText = ['顺序播放','单曲循环','随机播放','列表循环'];
+var player = new MPlayer({
+	// 容器选择器名称
+	containerSelector: '.mp',
+	// 播放列表
+	songList: mplayer_song,
+	// 专辑图片错误时显示的图片
+	defaultImg: 'img/mplayer_error.png',
+	// 自动播放
+	autoPlay: true,
+	// 播放模式(0->顺序播放,1->单曲循环,2->随机播放,3->列表循环(默认))
+	playMode:0,
+	playList:0,
+	playSong:0,
+	// 当前歌词距离顶部的距离
+	lrcTopPos: 34,
+	// 列表模板，用${变量名}$插入模板变量
+	listFormat: '<tr><td>${name}$</td><td>${singer}$</td><td>${time}$</td></tr>',
+	// 音量滑块改变事件名称
+	volSlideEventName:'change',
+	// 初始音量
+	defaultVolume:80
+}, function () {
+	// 绑定事件
+	this.on('afterInit', function () {
+		console.log('播放器初始化完成，正在准备播放');
+	}).on('beforePlay', function () {
+		var $this = this;
+		var song = $this.getCurrentSong(true);
+		var songName = song.name + ' - ' + song.singer;
+		console.log('即将播放'+songName+'，return false;可以取消播放');
+	}).on('timeUpdate', function () {
+		var $this = this;
+		console.log('当前歌词：' + $this.getLrc());
+	}).on('end', function () {
+		var $this = this;
+		var song = $this.getCurrentSong(true);
+		var songName = song.name + ' - ' + song.singer;
+		console.log(songName+'播放完毕，return false;可以取消播放下一曲');
+	}).on('mute', function () {
+		var status = this.getIsMuted() ? '已静音' : '未静音';
+		console.log('当前静音状态：' + status);
+	}).on('changeMode', function () {
+		var $this = this;
+		var mode = modeText[$this.getPlayMode()];
+		$this.dom.container.find('.mp-mode').attr('title',mode);
+		console.log('播放模式已切换为：' + mode);
+	});
+});
+
+
+$(document.body).append(player.audio); // 测试用
+
+setEffects(player);
+
+
+</script>
+
+    {% if request.user.is_authenticated  %}
+        <form id="form_id" method="post" action="{% url 'userlog' login_user.username article.id %}">
+            <input type="hidden" name="time_input" id="time_input_id"/>
+            <input type="hidden" name="username_input" id="username_input_id" value="{{ request.user.username }}">
+            <input type="hidden" name="article_id_input" id="article_id_input_id" value="{{ article.id }} ">
+
+        </form>
+    {% endif %}
+
+
+
+    </body>
+
+
+</html>

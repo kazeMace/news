@@ -1,0 +1,10 @@
+body{
+    background: url("../img/star_banner.jpg");
+}
+.ui.container.segment.padded.content_form{
+    width:750px;
+    height:800px;
+    margin: 24px;
+}
+
+

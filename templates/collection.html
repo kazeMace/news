@@ -1,0 +1,229 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <link rel="stylesheet" href="{% static 'css/semantic.css' %}" media="screen" title="no title" charset="utf-8">
+        <link href="https://fonts.googleapis.com/css?family=Oswald|Raleway" rel="stylesheet">
+
+        <style>
+            .ui.fixed.menu.top_menu{
+                box-sizing: border-box;
+                background: url("{% static 'img/star_banner.jpg' %}");
+                border:0;
+                height:35px;
+            }
+            body{
+                background: url('{% static 'img/star_banner.jpg' %}');
+                background-size: auto;
+                background-repeat:no-repeat;
+                background-attachment:fixed
+            }
+            .ui.raised.container.segments{
+                margin-top: 80px;
+            }
+            .ui.butt.segment {
+                height:auto;
+            }
+
+            form {
+                position: absolute;left: 50%;
+                transform: translate(-50%,0);
+                width:450px;
+            }
+
+            .ui.circular.image.cover{
+                position: absolute;left: 50%;top: 50%;
+                transform: translate(-50%,-50%);
+                height: 100px;
+                width: 100px;
+
+            }
+
+
+
+        </style>
+
+    </head>
+    <body>
+        <div class="ui fixed fixed menu top_menu">
+            <div class="item weather" style="background-color: #272829">
+              <a href="http://www.weather.com.cn/weather/101010100.shtml"><h4 class="ui inverted header">北京 晴 -5°/6°</h4></a>
+            </div>
+            <a class="item title" href="{% url 'index'%}">
+              <h2 class="ui center aligned inverted header">新闻个性化推荐系统</h2>
+            </a>
+            <div class="right menu">
+                {% if request.user.is_authenticated %}
+                <div class="item">
+                    <h5 class="ui inverted header">
+                        <a class="ui avatar image" href="{% url 'information' request.user.username %}">
+                            {% if login_user.profile.avatar %}
+                                <img src="/upload/{{ login_user.profile.avatar }}" alt="头像加载失败" />
+                            {% else %}
+                                <img src="{% static 'img/avatar_1.png' %}" alt="头像加载失败" />
+                            {% endif %}
+                        </a>
+                        {% if login_user.profile.nickname %}
+                            <a style="color: white" href="{% url 'information' request.user.username %}">{{ login_user.profile.nickname }}</a>
+                        {% else %}
+                            <a style="color: white" href="{% url 'information' request.user.username %}">{{ login_user.username }}</a>
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="item">
+                    <a href="{% url 'logout' %}" class="ui inverted circular button"><i class="sign out icon"></i>注销</a>
+                </div>
+
+                {% else %}
+
+                    <div class="item">
+                        <div class="ui buttons">
+                            <a href="{% url 'login' %}" class="ui inverted button"><i class="sign in icon"></i>登录</a>
+                            <div class="or"></div>
+                            <a href="{% url 'register' %}" class="ui inverted button"><i class="write icon"></i>注册</a>
+                        </div>                    </div>
+                {% endif %}
+              <div class="item" id="feedback">
+                  <a href="#"><h4 class="ui inverted header feedback">反馈</h4></a>
+              </div>
+              <div class="item" id="more">
+                  <a href=""><h4 class="ui inverted header more">更多</h4></a>
+              </div>
+          </div>
+        </div>
+
+
+
+        <div class="ui  raised container segments">
+            <div class="ui head basic segment" style="height: 150px;width: 100%;">
+                <div class="ui circular image cover">
+                   {% if login_user.profile.avatar %}
+                        <img src="/upload/{{ login_user.profile.avatar }}" alt="头像加载失败" style="width: 100px;height: 100px;"/>
+                    {% else %}
+                        <img src="{% static 'img/avatar_1.png' %}" alt="头像加载失败" style="width: 100px;height: 100px;"/>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="ui bottom inverted  six item attached menu">
+
+                <a class="item" href="{% url 'information' request.user.username %}">
+                    个人资料
+                </a>
+                <div class="active item">
+                    我赞过的
+                </div>
+            </div>
+
+            <div class="ui butt segment">
+                <div class="ui basic very padded segment container info" style="width:530px;">
+
+                    {% for collection in collection_list %}
+                    <form class="ui form" action="{% url 'cancel_collection' request.user.username collection.article_id %}" method="post">
+                        <div class="ui segment">
+                            <a class="eleven wide column" href="{% url 'detail' collection.article_id %}">
+                                <h3 style="color: black;margin-bottom: 7px;">{{ collection.article.headline }}</h3>
+                            </a>
+                            <div>
+                                <span style="color: grey;">
+                                {{ collection.article.date }}
+                                </span>
+                                <span class="" style="color:rgb(226, 226, 226)">|</span>
+                                <span style="color: grey;">
+                                {{ collection.article.under_comments.count }}人评论
+                                    </span>
+                                {% csrf_token %}
+
+                            </div>
+
+                            <button type="submit" style="padding:7px; position: relative;top:-17px;" class="ui borderless inverted blue right floated mini button" value="cancel_collection" >
+                                取消收藏
+                            </button>
+                        </div>
+                    </form>
+                    {% endfor %}
+
+                </div>
+                <div class="ui center aligned very padded vertical segment container">
+                    <div class="ui pagination menu">
+                        {% if collection_list.has_previous %}
+                            <a href="?page={{ collection_list.previous_page_number }}" class="item">
+                                <i class="icon green left arrow"></i>
+                            </a>
+                        {% else %}
+                            <a href="?page={{ collection_list.start_index }}" class="disabled item">
+                                <i class="icon  left arrow"></i>
+                            </a>
+                        {% endif %}
+                        {% for page_number in collection_list.paginator.page_range %}
+                            {% ifequal page_number  collection_list.number %}
+                                <a href="?page={{ page_number }}" class="active item" style="background-color: #2dc64f; color:white">
+                                    {{ page_number }}
+                                </a>
+                            {% else %}
+                                <a href="?page={{ page_number }}" class=" item">
+                                    {{ page_number }}
+                                </a>
+                            {% endifequal %}
+                        {% endfor %}
+                        {% if  collection_list.has_next %}
+                            <a href="?page={{ collection_list.next_page_number }}" class=" item">
+                                <i class="icon green right arrow"></i>
+                            </a>
+                        {% else %}
+                            <a href="?page={{ collection_list.paginator.num_pages }}" class="disabled item">
+                                <i class="icon right arrow"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+
+
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+      <div class="ui vertical basic inverted very padded segment">
+            <div class="ui grid">
+
+                <div class="four wide column">
+                    <div class="ui image">
+                        <img src="" alt="">
+                    </div>
+                </div>
+
+                <div class="four wide column">
+                    <div class="ui inverted vertical text menu">
+                        <h3 class="item header" style="color:#ffffff;">信息</h3>
+                        <a class="item" href="#">关于我们</a>
+                        <a class="item" href="#" >联系我们</a>
+                        <a class="item" href="#" >blog</a>
+                    </div>
+                </div>
+
+                <div class="four wide column">
+                    <div class="ui inverted vertical text menu">
+                         <h3 class="item header" style="color:#ffffff;" >社交网络</h3>
+                        <a class="item" href="#" ><i class="weibo icon"></i>新浪微博</a>
+                        <a class="item" href="#" ><i class="mail icon"></i>电子邮件</a>
+                        <a class="item" href="#" ><i class="github icon"></i>github</a>
+                    </div>
+                </div>
+
+                <div class="four wide column">
+                    <div class="ui vertical text menu">
+                        <p>DESIGN BY</p>
+                        <h2 class="ui header"><a href="#" style="color: #e2e2e2 ">zhangbohang</a></h2>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </body>
+</html>

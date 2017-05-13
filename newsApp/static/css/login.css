@@ -1,0 +1,18 @@
+body{
+    background: url("../img/super_blur_back2.jpg");
+}
+.ui.grid.segment.container.divided{
+    width: 600px !important;
+    height: 400px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    border: hidden;
+
+}
+.five.wide.column{
+    background: url("../img/super_blur_back2.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}

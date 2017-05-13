@@ -1,0 +1,33 @@
+body{
+    /*background: url('../img/super_blur_back2.jpg');*/
+    background-size: auto;
+    background-repeat:no-repeat;
+    background-attachment:fixed
+}
+.ui.fixed.menu.top_menu{
+    box-sizing: border-box;
+    /*background: url("../img/super_blur_back2.jpg");*/
+    border:0;
+    height:35px;
+}
+
+.ui.vertical.segment{
+
+}
+
+.ui.container.content_page{
+    /*padding-top: 50px;*/
+    width:88%;
+    height:auto;
+}
+.ui.vertical.segment.content_page{
+
+}
+
+.ui.segment.news_page{
+    background-color: #e4e4e4;
+}
+
+.ui.vertical.basic.borderless.segment.container{
+    width: 120px;
+}
