@@ -57,7 +57,7 @@
 
 
     </head>
-    <body>
+    <body style="background: url('{% static "img/bj.jpg" %}')">
     <div class="ui fixed fixed menu top_menu">
           <div class="item weather">
               <a href="http://www.weather.com.cn/weather/101010100.shtml"><h4 class="ui inverted header">北京 晴 -5°/6°</h4></a>
@@ -106,7 +106,7 @@
           </div>
         </div>
 
-        <div class="ui  segment padded container" style='margin-top: 54px; width:700px; background: url("{% static 'img/paper1.jpg' %}");background-repeat: no-repeat;background-size: 100% 100%;border-radius: 10px'>
+        <div class="ui  segment padded container" style='margin-top: 54px; width:700px; background: url("{% static 'img/' %}");background-repeat: no-repeat;background-size: 100% 100%;border-radius: 10px'>
             <h1 class="ui header" style="font-family:'Oswald', sans-serif;font-size:40px">
                 {{ article.headline }}
             </h1>
@@ -178,12 +178,17 @@
                     </div>
                     <div class="best comment">
                         <div class="avatar">
-                            <img style="width:35px;height:35px;" src="/upload/{{ best_comment.name.avatar }}"  alt="" />
+                            {% if best_comment.name.avatar %}
+                            <img src="/upload/{{ best_comment.name.avatar }}" alt="头像加载失败" />
+                            {% else %}
+                                <img src="{% static 'img/avatar_1.png' %}" alt="头像加载失败" />
+                            {% endif %}
                         </div>
+
                         <div class="content">
                             <a href="#" class="author">{{best_comment.name.nickname}}</a>
                             <div class="metadata">
-                                <div class="date">2 days ago</div>
+                                <div class="date">{{best_comment.time}}</div>
                             </div>
                             <p class="text" style="font-family: 'Raleway', sans-serif;">
                                 {{ best_comment.comment }}
@@ -196,7 +201,7 @@
 
                 {% for comment in article.under_comments.all %}
                     <div class="comment">
-                        <div class="avatar">
+                        <div class="avatar" style="width: 35px;height: 35px;">
                             {% if login_user.profile.avatar %}
                             <img src="/upload/{{ comment.name.avatar }}" alt="头像加载失败" />
                             {% else %}
@@ -211,8 +216,8 @@
                             <p class="text" style="font-family: 'Raleway', sans-serif;">
                                 {{comment.comment}}
                             </p>
-                                <a href=""><i class="thumbs outline down icon"></i>赞同</a>
-                                <a href=""><i class="thumbs outline up icon"></i>反对</a>
+                                <a href=""><i class="thumbs outline up icon"></i>赞同</a>
+                                <a href=""><i class="thumbs outline down icon"></i>反对</a>
                         </div>
                     </div>
                 {% endfor %}
@@ -242,7 +247,7 @@
                 {% csrf_token %}
                 <div class="ui basic segment" style="padding-left:0;">
                     <button type="submit" class="ui blue button" style="" ><i class="write icon"></i>评论</button>
-                </div>              
+                </div>
             </form>
 
         </div>

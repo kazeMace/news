@@ -28,7 +28,7 @@ for user in user_curs.fetchall():
     # print(get_date_time)
     for date_time in get_date_time.fetchall():
         date = date_time[0].strftime("%Y-%m-%d")
-        path = str('D:/recommend_article_id_' + str(user_id) + '_' + date + '.data')
+        path = str('D:/recommend_article_id_' + str(user_id) + '.data')
         with open(path, 'r', encoding='utf-8') as f:
             article_id_list = []
             for i in f:
@@ -63,7 +63,7 @@ for user in user_curs.fetchall():
                     image3 = i[14].strip()
                     image4 = i[15].strip()
                     image5 = i[16].strip()
-                    check = Recommend_Article.objects.filter(article_id=id)
+                    check = Recommend_Article.objects.filter(article_id=id, belong_to_id=user_id)
                     if check:
                         pass
                     else:

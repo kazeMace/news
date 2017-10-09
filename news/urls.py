@@ -15,14 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from newsApp.views import index, detail, detail_comment,index_login, index_register, myinfo, mycollection, vote, cancel_collection, userlog
+from newsApp.views import index, detail, detail_comment,index_login, index_register, myinfo, mycollection, vote, cancel_collection, userlog,search
 from django.contrib.auth.views import logout
 from django.conf import settings
 from django.conf.urls.static import static
 from newsApp.api import article
 from newsApp.newviews import newindex
 from rest_framework.authtoken import views
-
+# from django.conf.urls import url
+# from haystack.views import SearchView
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^index/$', index, name='index'),
@@ -45,6 +46,11 @@ urlpatterns = [
 
 
     url(r'^api/article/$', article, name="article_api"),
+    # url(r'^search/$', SearchView(), name='haystack_search'),
+    # (r'^search/', include('haystack.urls')),
+    url(r'^search/$',search, name='search')
+    # url(r'^search/(?P<cate>[A-Za-z]+)$',search, name='search')
+
 
 
 ]

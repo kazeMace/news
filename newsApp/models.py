@@ -3,12 +3,11 @@ from django.db import models
 from django.contrib.auth.models import User
 import csv
 
- 
 # Create your models here.
 
 
 class Article(models.Model):
-
+    # article_id = models.CharField(default=id,max_length=100)
     headline = models.CharField(null=True, blank=True, max_length=300)
     content = models.TextField(null=True, blank=True)
     date = models.DateField(auto_now=False)
@@ -37,6 +36,7 @@ class Article(models.Model):
     image5 = models.ImageField(null=True,blank=True)
 
     def __str__(self):
+
         return self.headline
 
 class Recommend_Article(models.Model):
@@ -138,6 +138,7 @@ class Comment(models.Model):
     belong_to = models.ForeignKey(to=Article, related_name='under_comments', null=True, blank=True)
     best_comment = models.BooleanField(default=False)
     like_count = models.ImageField(null=True, blank=True)
+    dislike_count = models.ImageField(null=True, blank=True)
     def __str__(self):
         return str(self.id)
 
@@ -182,64 +183,39 @@ class Feedback(models.Model):
 
 
 class banner_Article(models.Model):
-    headline = models.CharField(null=True, blank=True, max_length=300)
-    content = models.TextField(null=True, blank=True)
-    date = models.DateField(auto_now=False)
-    views = models.IntegerField(default=0)
-    like = models.IntegerField(default=0)
-    dislike = models.IntegerField(default=0)
-    TAG_CHOICE = (
-        ('国内', '国内'),
-        ('国际', '国际'),
-        ('社会', '社会'),
-        ('体育', '体育'),
-        ('财经', '财经'),
-        ('军事', '军事'),
-        ('科技', '科技'),
-        ('搞笑', '搞笑'),
-    )
-    recommend = models.BooleanField(default=False)
-    tag = models.CharField(null=True, blank=True, max_length=10, choices=TAG_CHOICE)
-    source = models.CharField(null=True, blank=True, max_length=50)
-    url = models.CharField(null=True, blank=True, max_length=1000)
-    keywords = models.CharField(null=True, blank=True, max_length=100)
-    image1 = models.ImageField(null=True, blank=True)
-    image2 = models.ImageField(null=True, blank=True)
-    image3 = models.ImageField(null=True, blank=True)
-    image4 = models.ImageField(null=True, blank=True)
-    image5 = models.ImageField(null=True, blank=True)
+    belong_to_article = models.OneToOneField(to=Article, related_name='banner', default=None)
+    # headline = models.CharField(null=True, blank=True, max_length=300)
+    # content = models.TextField(null=True, blank=True)
+    # date = models.DateField(auto_now=False)
+    # views = models.IntegerField(default=0)
+    # like = models.IntegerField(default=0)
+    # dislike = models.IntegerField(default=0)
+    # TAG_CHOICE = (
+    #     ('国内', '国内'),
+    #     ('国际', '国际'),
+    #     ('社会', '社会'),
+    #     ('体育', '体育'),
+    #     ('财经', '财经'),
+    #     ('军事', '军事'),
+    #     ('科技', '科技'),
+    #     ('搞笑', '搞笑'),
+    # )
+    # recommend = models.BooleanField(default=False)
+    # tag = models.CharField(null=True, blank=True, max_length=10, choices=TAG_CHOICE)
+    # source = models.CharField(null=True, blank=True, max_length=50)
+    # url = models.CharField(null=True, blank=True, max_length=1000)
+    # keywords = models.CharField(null=True, blank=True, max_length=100)
+    # image1 = models.ImageField(null=True, blank=True)
+    # image2 = models.ImageField(null=True, blank=True)
+    # image3 = models.ImageField(null=True, blank=True)
+    # image4 = models.ImageField(null=True, blank=True)
+    # image5 = models.ImageField(null=True, blank=True)
 
     def __str__(self):
-        return self.headline
+        return self.str
 
 class hot_Article(models.Model):
-    headline = models.CharField(null=True, blank=True, max_length=300)
-    content = models.TextField(null=True, blank=True)
-    date = models.DateField(auto_now=False)
-    views = models.IntegerField(default=0)
-    like = models.IntegerField(default=0)
-    dislike = models.IntegerField(default=0)
-    TAG_CHOICE = (
-        ('国内', '国内'),
-        ('国际', '国际'),
-        ('社会', '社会'),
-        ('体育', '体育'),
-        ('财经', '财经'),
-        ('军事', '军事'),
-        ('科技', '科技'),
-        ('搞笑', '搞笑'),
-    )
-    recommend = models.BooleanField(default=False)
-    tag = models.CharField(null=True, blank=True, max_length=10, choices=TAG_CHOICE)
-    source = models.CharField(null=True, blank=True, max_length=50)
-    url = models.CharField(null=True, blank=True, max_length=1000)
-    keywords = models.CharField(null=True, blank=True, max_length=100)
-    image1 = models.ImageField(null=True, blank=True)
-    image2 = models.ImageField(null=True, blank=True)
-    image3 = models.ImageField(null=True, blank=True)
-    image4 = models.ImageField(null=True, blank=True)
-    image5 = models.ImageField(null=True, blank=True)
-
+    belong_to_article = models.OneToOneField(to=Article, related_name='hot_news', default=None)
     def __str__(self):
-        return self.headline
+        return self.id
 

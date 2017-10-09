@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 def index(request, cate=None):
     print(request.user, type(request.user))
     print(request.user.username, type(request.user.username))
-    if  request.user.is_authenticated:
+    if request.user.is_authenticated:
         user = request.user
         user_id = request.user.id
         print(user_id)
@@ -43,9 +43,13 @@ def index(request, cate=None):
 
         elif cate == 'recommend':
             article_list = Recommend_Article.objects.filter(belong_to=user)
-
         else:
-            article_list = Article.objects.all()
+            # article_list = Article.objects.all()
+            article_list = Recommend_Article.objects.filter(belong_to=user)
+        if cate is None:
+            article_list = Recommend_Article.objects.filter(belong_to=user)
+        page_robot = Paginator(article_list, 6)
+        page_num = request.GET.get('page')
     else:
         if cate == 'china':
             article_list = Article.objects.filter(tag='国内')
@@ -71,15 +75,15 @@ def index(request, cate=None):
         elif cate == 'funny':
             article_list = Article.objects.filter(tag='搞笑')
         elif cate == 'recommend':
-            article_list = Article.objects.all()
+            article_list = Article.objects.order_by('-views')
 
-        else:
-            article_list = Article.objects.all()
+        # else:
+        #     article_list = Article.objects.order_by('-views')
 
-    if cate is None:
-        article_list = Article.objects.all()
-    page_robot = Paginator(article_list, 6)
-    page_num = request.GET.get('page')
+        if cate is None:
+            article_list = Article.objects.order_by('-views')
+        page_robot = Paginator(article_list, 6)
+        page_num = request.GET.get('page')
     try:
 
         article_list = page_robot.page(page_num)
@@ -95,21 +99,30 @@ def index(request, cate=None):
         context['login_user'] = login_user
         context['article_list'] = article_list
         # context['recommend_article_list'] = recommend_article_list
+        hot_article_list = Article.objects.order_by('-views')[0:5]
+        context["hot_article_list"] = hot_article_list
         return render(request, 'index.html', context)
     else:
         context = {}
         context['article_list'] = article_list
         # context['recommend_article_list'] = recommend_article_list
+        hot_article_list = Article.objects.order_by('-views')[0:5]
+        context["hot_article_list"] = hot_article_list
         return render(request, 'index.html', context)
 
 
 def detail(request, page_num, error_form=None):
     context = {}
+
     a = Article.objects.get(id=page_num)
+    # 修改models的方法
+
     best_comment = Comment.objects.filter(best_comment=True, belong_to=a)
     if best_comment:
         context['best_comment'] = best_comment[0]
     if request.user.is_authenticated:
+        a.views += 1
+        a.save()
         # print(request.POST[])
         login_user = request.user
         context['login_user'] = login_user
@@ -124,6 +137,8 @@ def detail(request, page_num, error_form=None):
         # userlog.save()
         times = 0
         haslog = Userlog.objects.filter(belong_to=login_user, url=url, article_id=page_num)
+        print("haslog:")
+        print(haslog)
         try:
             if len(haslog)!=0 :
                 thisuserlog = Userlog.objects.get(belong_to=login_user, url=url, article_id=page_num)
@@ -133,11 +148,13 @@ def detail(request, page_num, error_form=None):
                 userlog = Userlog(belong_to=login_user, url=url, article_id=page_num, last_time=now_last_time, times=times+1)
                 userlog.save()
                 print(times)
+                print("has update")
+            else:
+                userlog = Userlog(belong_to=login_user, url=url, article_id=page_num, times=1)
+                userlog.save()
         except:
             pass
-        else:
-            userlog = Userlog(belong_to=login_user, url=url, article_id=page_num, times=1)
-            userlog.save()
+
         context['article'] = article
         # best_comment = Comment.objects.filter(best_comment=True, belong_to=article)
         # if best_comment:
@@ -480,15 +497,87 @@ def userlog(request, page_num, username):
         if last_article_id == page_num:
             this_userlog = Userlog.objects.get(belong_to=login_user, article_id=page_num)
             now_last_time = this_userlog.last_time
+            url = this_userlog.url
+            times = this_userlog.times
+            like_keywords = this_userlog.like_keywords
             print(now_last_time)
             new_last_time = int(time_last) + int(now_last_time)
             print('new_last_time:'+str(new_last_time))
-            this_userlog.last_time = int(new_last_time)
-            this_userlog.save()
+            # this_userlog.last_time = int(new_last_time)
+            this_userlog.delete()
+            userlog = Userlog(belong_to=login_user, url=url ,article_id=last_article_id,times=times,like_keywords=like_keywords,last_time=int(new_last_time))
+            userlog.save()
 
         return redirect(to='userlog', page_num=page_num, username=username)
         # pass
 
+
+def search(request):
+    if request.user.is_authenticated:
+        login_user = request.user
+
+        keyword = request.POST['searchWords']
+        print(keyword)
+        allArticle = Article.objects.all()
+        SearchResult = []
+        for x in allArticle:
+            if keyword in x.headline:
+                SearchResult.append(x)
+            elif keyword in x.content:
+                SearchResult.append(x)
+        SearchStatus = "Error" if len(SearchResult) == 0 else "Success"
+        ResultAmount = len(SearchResult)
+        print(SearchResult)
+        page_robot = Paginator(SearchResult, 6)
+        page_num = request.GET.get('page')
+
+        try:
+
+            SearchResult = page_robot.page(page_num)
+        except EmptyPage:
+            SearchResult = page_robot.page(page_robot.num_pages)
+        except PageNotAnInteger:
+            SearchResult = page_robot.page(1)
+        hot_article_list = Article.objects.order_by('-views')[0:5]
+
+        return render(request, 'search.html', {"keyword": keyword,
+                                                "SearchResult": SearchResult,
+                                                "SearchStatus": SearchStatus,
+                                                "ResultAmount": ResultAmount,
+                                                'hot_article_list':hot_article_list,
+                                                'login_user':login_user,
+                                               })
+    else:
+        keyword = request.POST['searchWords']
+        print(keyword)
+        allArticle = Article.objects.all()
+        SearchResult = []
+        for x in allArticle:
+            if keyword in x.headline:
+                SearchResult.append(x)
+            elif keyword in x.content:
+                SearchResult.append(x)
+        SearchStatus = "Error" if len(SearchResult) == 0 else "Success"
+        ResultAmount = len(SearchResult)
+        print(SearchResult)
+        page_robot = Paginator(SearchResult, 6)
+        page_num = request.GET.get('page')
+
+        try:
+
+            SearchResult = page_robot.page(page_num)
+        except EmptyPage:
+            SearchResult = page_robot.page(page_robot.num_pages)
+        except PageNotAnInteger:
+            SearchResult = page_robot.page(1)
+        hot_article_list = Article.objects.order_by('-views')[0:5]
+
+        return render(request, 'search.html', {"keyword": keyword,
+                                               "SearchResult": SearchResult,
+                                               "SearchStatus": SearchStatus,
+                                               "ResultAmount": ResultAmount,
+                                               'hot_article_list': hot_article_list,
+                                               })
 
 
 

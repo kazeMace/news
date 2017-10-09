@@ -1,0 +1,409 @@
+<!doctype html>
+{% load  staticfiles %}
+<html class="no-js" lang="ch">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+
+
+    
+        <link rel="stylesheet" href="{% static 'css/semantic.css' %}">
+        <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+        <style>
+        .ui.vertical.fluid.tabular.menu > a:hover {
+            background-color: lightcoral;
+            color: #ffffff;
+        }
+
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        ul {
+            list-style: outside none none;
+        }
+
+        .slider, .slider-panel img, .slider-extra {
+            width: 655px;
+            height: 300px;
+        }
+
+        .slider {
+            text-align: center;
+        {#                margin:30px auto;#} position: relative;
+        }
+
+        .slider-panel, .slider-nav, .slider-pre, .slider-next {
+            position: absolute;
+            z-index: 8;
+        }
+
+        .slider-panel {
+            position: absolute;
+        }
+
+        .slider-panel img {
+            border: none;
+        }
+
+        .slider-extra {
+            position: relative;
+        }
+
+        .slider-nav {
+            margin-left: -51px;
+            position: absolute;
+            left: 50%;
+            bottom: 4px;
+        }
+
+        .slider-nav li {
+            background: #3e3e3e;
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            margin: 0 2px;
+            overflow: hidden;
+            text-align: center;
+            display: inline-block;
+            height: 18px;
+            line-height: 18px;
+            width: 18px;
+        }
+
+        .slider-nav .slider-item-selected {
+            background: rgba(255, 255, 255, 0.54);
+        }
+
+        .slider-page a {
+            background: rgba(0, 0, 0, 0.2);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#33000000, endColorstr=#33000000);
+            color: #fff;
+            text-align: center;
+            display: block;
+            font-family: "simsun";
+            font-size: 22px;
+            width: 28px;
+            height: 62px;
+            line-height: 62px;
+            margin-top: -31px;
+            position: absolute;
+            top: 50%;
+        }
+
+        .slider-page a:HOVER {
+            background: rgba(0, 0, 0, 0.4);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000, endColorstr=#66000000);
+        }
+
+        .slider-next {
+            left: 100%;
+            margin-left: -28px;
+        }
+
+        #left_nemu a:hover {
+            color: #ffffff;
+        }
+
+    </style>
+
+
+    </head>
+    <body>
+    <!--菜单-->
+        <div class="ui fixed menu top_menu" style="background:url('{% static "img/super_blur_back2.jpg" %}');">
+          <div class="item weather" style="background:url('{% static "img/super_blur_back2.jpg" %}');">
+              <a href="http://www.weather.com.cn/weather/101010100.shtml"><h4 class="ui inverted header">北京 晴 -5°/6°</h4></a>
+          </div>
+          <div class="item title">
+              <h2 class="ui center aligned inverted header">基于web的个性化新闻推荐系统</h2>
+          </div>
+          <div class="right menu">
+
+                {% if request.user.is_authenticated %}
+                    <div class="item">
+                        <h5 class="ui inverted header">
+                            <a class="ui avatar image" href="{% url 'information' request.user.username %}">
+                                {% if login_user.profile.avatar %}
+                                    <img src="/upload/{{ login_user.profile.avatar }}" alt="头像加载失败" />
+                                {% else %}
+                                    <img src="{% static 'img/avatar_1.png' %}" alt="头像加载失败" />
+                                {% endif %}
+                            </a>
+                            {% if login_user.profile.nickname %}
+                                <a style="color: white" href="{% url 'information' request.user.username %}">{{ login_user.profile.nickname }}</a>
+                            {% else %}
+                                <a style="color: white" href="{% url 'information' request.user.username %}">{{ login_user.username }}</a>
+                            {% endif %}
+
+                        </h5>
+                    </div>
+                    <div class="item">
+                        <a href="{% url 'logout' %}" class="ui inverted circular button"><i class="sign out icon"></i>注销</a>
+                    </div>
+
+                {% else %}
+
+                    <div class="item">
+                        <div class="ui buttons">
+                            <a href="{% url 'login' %}" class="ui inverted button"><i class="sign in icon"></i>登录</a>
+                            <div class="or"></div>
+                            <a href="{% url 'register' %}" class="ui inverted button"><i class="write icon"></i>注册</a>
+                        </div>
+                    </div>
+                {% endif %}
+              <div class="item" id="feedback">
+                  <a href="#"><h4 class="ui inverted header feedback">反馈</h4></a>
+              </div>
+              <div class="item" id="more">
+                  <a href=""><h4 class="ui inverted header more">更多</h4></a>
+              </div>
+          </div>
+        </div>
+    <!--内容-->
+        <div class="ui container content_page" style="padding-top: 50px;">
+        <div class="ui segment">
+            <div class="ui grid">
+            <div class="ui thirteen wide column">
+                 <form method="get" action=".">
+                    <table>
+                        {{ form }}
+                        <tr>
+                            <td> </td>
+                            <td>
+                                <input type="submit" value="Search">
+                            </td>
+                        </tr>
+                    </table>
+
+            </div>
+                
+
+                </form>
+            </div>
+        </div>
+{#            <div class="ui vertical segment content_page">#}
+                <div class="ui grid">
+                    <div class="two wide column vertical_menu" style="position: fixed" >
+
+                                <div class="ui vertical fluid tabular menu" id="left_nemu" style="border: 0;">
+                {#                         <div class="title">#}
+                {#                             <h2 class="ui center aligned header">新闻个性化推荐系统</h2>#}
+                {#                         </div>#}
+                {#                            <a href="#" ></a>#}
+                {% if 'recommend' in request.path or request.path == "/index/" %}
+                    <a href="{% url 'index' %}recommend" class="ui active button item"
+                       style="background-color: lightcoral; border:0;"><h3 class="ui header" style="color: white">
+                        推荐</h3></a>
+                {% else %}
+                    <a id="recommend" href="{% url 'index' %}recommend" class="ui red button item"
+                       style="color: #3b3c3c;font-weight: bolder;"><h4 class="ui header">推荐</h4></a>
+                {% endif %}
+
+                {#                             {% if %}#}
+                {#                                <a  href="{% url 'index'%}recommend" class="ui active button item" style="background-color: lightcoral; border:0;"><h3 class="ui header" style="color: white">推荐</h3> </a>#}
+                {#                            {% else %}#}
+                {#                                <a id="recommend" href="{% url 'index'%}recommend" class="ui red button item" style="color: #3b3c3c;font-weight: bolder;"><h4 class="ui header">推荐</h4></a>#}
+                {#                            {% endif %}#}
+
+                {% if 'china' in request.path %}
+                    <a href="{% url 'index' %}china" class="ui button active item"
+                       style="background-color: lightcoral;border:0; "><h3 class="ui header" style="color: white">
+                        国内</h3></a>
+                {% else %}
+                    <a href="{% url 'index' %}china" class="ui red button item"
+                       style="color:#3b3c3c;font-weight: bolder;"><h4 class="ui header">国内 </h4></a>
+                {% endif %}
+
+                {% if 'world' in request.path %}
+                    <a href="{% url 'index' %}world" class="ui button active  item"
+                       style="background-color: lightcoral;border:0; "><h3 class="ui header" style="color: white">
+                        国际</h3></a>
+                {% else %}
+                    <a href="{% url 'index' %}world" class="ui red button item"
+                       style="color:#3b3c3c;font-weight: bolder; "><h4 class="ui header"> 国际</h4></a>
+                {% endif %}
+
+                {% if 'social' in request.path %}
+                    <a href="{% url 'index' %}social" class="ui button active item"
+                       style="background-color: lightcoral;border:0; "><h3 class="ui header" style="color: white">
+                        社会</h3></a>
+                {% else %}
+                    <a href="{% url 'index' %}social" class="ui red button item"
+                       style="color:#3b3c3c;font-weight: bolder; "><h4 class="ui header">社会</h4></a>
+                {% endif %}
+
+                {% if 'sports' in request.path %}
+                    <a href="{% url 'index' %}sports" class="ui button active item"
+                       style="background-color: lightcoral; border:0;"><h3 class="ui header" style="color: white">
+                        体育</h3></a>
+                {% else %}
+                    <a href="{% url 'index' %}sports" class="ui red button item"
+                       style="color:#3b3c3c;font-weight: bolder; "><h4 class="ui header">体育</h4></a>
+                {% endif %}
+
+                {% if 'economic' in request.path %}
+                    <a href="{% url 'index' %}economic" class="ui button active item"
+                       style="background-color: lightcoral;border:0; "><h3 class="ui header" style="color: white">
+                        财经</h3></a>
+                {% else %}
+                    <a href="{% url 'index' %}economic" class="ui red button item"
+                       style="color:#3b3c3c;font-weight: bolder; "><h4 class="ui header">财经</h4></a>
+                {% endif %}
+
+
+                {% if 'mil' in request.path %}
+                    <a href="{% url 'index' %}mil" class="ui button active item"
+                       style="background-color: lightcoral;border:0; "><h3 class="ui header" style="color: white">
+                        军事</h3></a>
+                {% else %}
+                    <a href="{% url 'index' %}mil" class="ui red button item"
+                       style="color:#3b3c3c;font-weight: bolder; "><h4 class="ui header">军事</h4></a>
+                {% endif %}
+
+                {% if 'tech' in request.path %}
+                    <a href="{% url 'index' %}tech" class="ui button active item"
+                       style="background-color: lightcoral;border:0; "><h3 class="ui header" style="color: white">
+                        科技</h3></a>
+                {% else %}
+                    <a href="{% url 'index' %}tech" class="ui red button item"
+                       style="color:#3b3c3c;font-weight: bolder; "><h4 class="ui header">科技</h4></a>
+                {% endif %}
+
+                {% if 'funny' in request.path %}
+                    <a href="{% url 'index' %}funny" class="ui button active item"
+                       style="background-color: lightcoral;border:0; "><h3 class="ui header" style="color: white">
+                        搞笑</h3></a>
+                {% else %}
+                    <a href="{% url 'index' %}funny" class="ui red button item"
+                       style="color:#3b3c3c;font-weight: bolder; "><h4 class="ui header"> 搞笑</h4></a>
+                {% endif %}
+
+
+            </div>
+                    </div>
+    {% if query %}
+
+                    <div class="eleven wide stretched column" style="margin-left: 160px">
+                        <div class="ui raised segment news_page">
+
+                        {% for result in page.object_list %}
+               
+
+
+
+
+                                <div class="ui raised segment news">
+                                    <a href="">
+                                        {{ result.article_id }}
+                                        <h2 class="ui header">{{ result.headline}}</h2>
+                                    </a>
+                                    <div style="margin-bottom: 5px;">
+                                        {{ result.content|truncatechars:150 }}
+                                        <div>
+                                             <a href="" style="color: grey;">
+                                                 <i class="angle tiny double grey right icon"></i>
+                                                    阅读更多
+                                             </a>
+                                        </div>
+                                    </div>
+                           <!--      <div class="ui form" ></div>
+
+                                    {% ifequal article.tag '国内'%}
+                                        <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}china"> {{ article.tag }}</a>
+                                    {% else %}
+                                        {% ifequal article.tag '国际'%}
+                                            <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}world"> {{ article.tag }}</a>
+                                        {% else %}
+                                            {% ifequal article.tag '社会'%}
+                                                <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}social"> {{ article.tag }}</a>
+                                            {% else %}
+                                                {% ifequal article.tag '体育'%}
+                                                    <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}sports"> {{ article.tag }}</a>
+                                                {% else %}
+                                                    {% ifequal article.tag '财经'%}
+                                                        <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}economic"> {{ article.tag }}</a>
+                                                    {% else %}
+                                                        {% ifequal article.tag '军事'%}
+                                                            <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}mil"> {{ article.tag }}</a>
+                                                        {% else %}
+                                                            {% ifequal article.tag '科技'%}
+                                                                <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}tech"> {{ article.tag }}</a>
+                                                            {% else %}
+                                                                {% ifequal article.tag '搞笑' %}
+                                                                    <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}funny"> {{ article.tag }}</a>
+                                                                {% else %}
+                                                                    <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}funny"> {{ article.tag }}</a>
+                                                                {% endifequal %}
+                                                            {% endifequal %}
+                                                        {% endifequal %}
+                                                    {% endifequal %}
+                                                {% endifequal %}
+                                            {% endifequal %}
+                                        {% endifequal %}
+                                    {% endifequal %}
+
+
+                                    <span class="" style="color:rgb(226, 226, 226)">|</span>
+                                    <span style="color: grey;"> {{ article.source }}</span>
+                                    <span class="" style="color:rgb(226, 226, 226)">|</span>
+                                    <span style="color: darkgrey">{{ article.date }}</span>
+
+                                </div>
+ -->
+
+                
+
+                       
+
+                            <div class="ui vertical basic borderless segment container">
+                                <div class="ui two item center menu">
+                                    {% if article_list.has_previous %}
+                                        <a class="item" href="?page={{ article_list.previous_page_number }}">
+                                            <i class="icon green left arrow"></i>
+                                        </a>
+                                    {% else %}
+                                        <a class="disabled item">
+                                            <i class="icon left arrow"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if article_list.has_next %}
+                                        <a class="item" href="?page={{ article_list.next_page_number }}">
+                                            <i class="icon green right arrow"></i>
+                                        </a>
+                                    {% else %}
+                                        <a class="disabled item">
+                                            <i class="icon right arrow"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                             {% empty %}
+                            <p>No results found.</p>
+                        {% endfor %}
+
+                        </div>
+                    </div>
+        {% endif %}       
+                    <div class="three wide column">
+
+
+                    </div>
+                </div>
+{#            </div>#}
+        </div>
+   
+
+    </body>
+</html>

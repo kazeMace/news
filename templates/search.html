@@ -1,0 +1,106 @@
+{% extends 'index.html' %}
+
+<div class="nine wide stretched column" style="margin-left: 160px">
+{% block content %}
+<div class="ui raised segment news_page">
+<h2 class="ui header"> 搜索结果</h2>
+{% if SearchStatus == 'Error' %}
+        <div class="well fade in daytips">
+
+            <strong>没有找到关于<font color="red"><b>"{{ keyword }}"</b></font>的内容,请换一个词试试</strong>
+        </div>
+    {% endif %}
+{% if SearchStatus == 'Success' %}
+	<div class="well fade in daytips">
+            <strong>关于<font color="red"><b>"{{ keyword }}"</b></font>的搜索结果一共有<font
+                    color="red"><b>"{{ ResultAmount }}"</b></font>条</strong>
+        </div>
+            {% for article in SearchResult %}
+
+                                <div class="ui raised segment news">
+                                    <a href="{% url 'detail' article.id %}">
+                                        <h2 class="ui header">{{ article.headline}}</h2>
+                                    </a>
+                                    <div style="margin-bottom: 5px;">
+                                        {{ article.content|truncatechars:150 }}
+                                        <div>
+                                             <a href="{% url 'detail' article.id %}" style="color: grey;">
+                                                 <i class="angle tiny double grey right icon"></i>
+                                                    阅读更多
+                                             </a>
+                                        </div>
+                                    </div>
+
+
+                                    {% ifequal article.tag '国内'%}
+                                        <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}china"> {{ article.tag }}</a>
+                                    {% else %}
+                                        {% ifequal article.tag '国际'%}
+                                            <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}world"> {{ article.tag }}</a>
+                                        {% else %}
+                                            {% ifequal article.tag '社会'%}
+                                                <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}social"> {{ article.tag }}</a>
+                                            {% else %}
+                                                {% ifequal article.tag '体育'%}
+                                                    <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}sports"> {{ article.tag }}</a>
+                                                {% else %}
+                                                    {% ifequal article.tag '财经'%}
+                                                        <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}economic"> {{ article.tag }}</a>
+                                                    {% else %}
+                                                        {% ifequal article.tag '军事'%}
+                                                            <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}mil"> {{ article.tag }}</a>
+                                                        {% else %}
+                                                            {% ifequal article.tag '科技'%}
+                                                                <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}tech"> {{ article.tag }}</a>
+                                                            {% else %}
+                                                                {% ifequal article.tag '搞笑' %}
+                                                                    <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}funny"> {{ article.tag }}</a>
+                                                                {% else %}
+                                                                    <a class="ui inverted mini button" style="background-color: lightcoral; color: #ffffff;" href="{% url 'index' %}funny"> {{ article.tag }}</a>
+                                                                {% endifequal %}
+                                                            {% endifequal %}
+                                                        {% endifequal %}
+                                                    {% endifequal %}
+                                                {% endifequal %}
+                                            {% endifequal %}
+                                        {% endifequal %}
+                                    {% endifequal %}
+
+								<span class="" style="color:rgb(226, 226, 226)">|</span>
+								<span style="color: grey;"> {{ article.source }}</span>
+								<span class="" style="color:rgb(226, 226, 226)">|</span>
+								<span style="color: darkgrey">{{ article.date }}</span>
+
+
+                                </div>
+            {% endfor %}
+	  <div class="ui vertical basic borderless segment container">
+
+
+
+                                <div class="ui two item center menu">
+                                    {% if SearchResult.has_previous %}
+                                        <a class="item" href="?page={{ SearchResult.previous_page_number }}">
+                                            <i class="icon green left arrow"></i>
+                                        </a>
+                                    {% else %}
+                                        <a class="disabled item">
+                                            <i class="icon left arrow"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if article_list.has_next %}
+                                        <a class="item" href="?page={{ SearchResult.next_page_number }}">
+                                            <i class="icon green right arrow"></i>
+                                        </a>
+                                    {% else %}
+                                        <a class="disabled item">
+                                            <i class="icon right arrow"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+		{% endif %}
+	</div>
+
+{% endblock %}
